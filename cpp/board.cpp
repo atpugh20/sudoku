@@ -13,7 +13,8 @@ public:
 	Board(std::mt19937 gen) : size(9), gen(gen), total_squares(size * size) {
 		for (int i = 0; i < size; i++) {
 			nums[i] = i + 1;
-		}	
+		}
+		std::shuffle(nums.begin(), nums.end(), gen);
 	}
 
 	std::array<std::array<int,9>, 9> grid {0};
@@ -87,9 +88,21 @@ public:
 		}
 		
 		while (true) {
-			fill();	
-			for (int i = 0; i < 81 - clues; i++) {
+			fill();
+			while(true) {		
+				int zeros = 0;
 				grid[rand_num()][rand_num()] = 0;
+
+				for (std::array<int, 9> row : grid) {
+					for (int cell : row) {
+						if (cell == 0) {
+							zeros++;
+						}
+					}
+				}
+				if (zeros == 81 - clues) {
+					break;
+				}
 			}
 
 			if (can_win()) {
@@ -100,7 +113,6 @@ public:
 		}
 
 		print();
-
 	}
 
 	bool is_valid_board() {
@@ -141,7 +153,6 @@ public:
 		/**
 		 * Fills in all of the empty cells to solve or fill the grid.
 		 */
-		std::shuffle(nums.begin(), nums.end(), gen);
 		std::array<int, 9> full_column;
 		std::array<int, 9> full_square;
 		
