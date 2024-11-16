@@ -2,7 +2,7 @@
 #include <array>
 #include <iostream>
 #include <random>
-#include <set>
+#include <unordered_map>
 
 class Board {
 	int size;
@@ -20,6 +20,9 @@ public:
 	std::array<int, 9> nums {0};
 
 	void print() {
+		/**
+		 * Prints the grid to the console as a matrix
+		 */
 		for (std::array<int, 9> row : grid) {
 			for (int c : row) {
 				std::cout << c << " ";
@@ -29,7 +32,78 @@ public:
 		std::cout << "\n";
 	}
 
-	bool is_valid() {
+	void get_move() {
+		/**
+		 * Gets a move from the user. Loops until the move is valid.
+		 */
+		int move;
+		int move_row;
+		int move_col;
+		bool valid;
+
+		while (true) {
+			// Get user's move
+			std::cout << "Input the col then row:\n";
+			std::cin >> move_col;
+			std::cin >> move_row;
+			std::cout << "Input the number you wish to fill\n";
+			std::cin >> move;
+
+			// Check if the move is valid
+			if (grid[move_row][move_col] == 0) {
+				grid[move_row][move_col] = move;
+				if (is_valid_board()) {
+					if (can_win()) {
+						valid = true;
+					} else {
+						valid = false;
+						grid[move_row][move_col] = 0;
+					}
+				} else {
+					valid = false;
+					grid[move_row][move_col] = 0;
+				}
+			} else {
+				valid = false;
+			}
+
+			// Handle loop break
+			if (valid) {
+				break;
+			} else {
+				std::cout << "Invalid move!" << std::endl;
+				print();
+			}
+		}
+	}
+
+	void make_puzzle(int difficulty) {
+		int clues;
+		switch (difficulty) {
+			case 1: clues = 35; break;  // Medium
+			case 2: clues = 30; break;  // Hard
+			case 3: clues = 25; break;  // Expert
+			default: clues = 40; break; // Easy
+		}
+		
+		while (true) {
+			fill();	
+			for (int i = 0; i < 81 - clues; i++) {
+				grid[rand_num()][rand_num()] = 0;
+			}
+
+			if (can_win()) {
+				break;
+			} else {
+				grid = {0};
+			}
+		}
+
+		print();
+
+	}
+
+	bool is_valid_board() {
 		/** 
 		 * Checks if there are any repeated values in any
 		 * of the rows, columns, or squares.
@@ -37,23 +111,28 @@ public:
 
 		// Check rows
 		for (std::array<int, 9> row : grid) {
-			std::set<int> unique(row.begin(), row.end());	
-			if (row.size() != unique.size()) {
+			if (!is_valid(row)) {
 				return false;
-			}
+			}	
 		}
 
 		// Check columns
 		for (int i = 0; i < 9; i++) {
 			std::array<int, 9> column = get_column(i);
-			std::set<int> unique(column.begin(), column.end());
-			if (column.size() != unique.size()) {
+			if (!is_valid(column)) {
 				return false;
 			}
 		}
 
-		// Handle the squares below
 		// Check squares
+		for (int i = 0; i < 81; i += 3) {
+			int row =  i / 9;
+			int col = i % 9;
+			std::array<int, 9> square = get_square(row, col);
+			if (!is_valid(square)) {
+				return false;
+			}
+		}
 
 		return true;
 	}
@@ -63,15 +142,13 @@ public:
 		 * Fills in all of the empty cells to solve or fill the grid.
 		 */
 		std::shuffle(nums.begin(), nums.end(), gen);
-		int row;
-		int col;
 		std::array<int, 9> full_column;
 		std::array<int, 9> full_square;
 		
 		// Fill every empty cell
 		for (int i = 0; i < total_squares; i++) {
-			row = i / 9;
-			col = i % 9;
+			int row = i / 9;
+			int col = i % 9;
 	
 			// Check if the cell is empty
 			if (grid[row][col] == 0) {
@@ -102,6 +179,18 @@ public:
 			}
 		}
 		return false;
+	}
+
+	bool can_win() {
+		std::array<std::array<int, 9>, 9> temp = grid;	
+		bool winnable;	
+		if (fill()) {
+			winnable = true;
+		} else {
+			winnable = false;
+		}
+		grid = temp;
+		return winnable;
 	}
 
 private:
@@ -142,12 +231,37 @@ private:
 		return square;
 	}
 
-	bool in_array(int num, std::array<int, 9> squares) {
+	bool is_valid(const std::array<int, 9>& cells) {
+		/**
+		 * Uses the rates of each number in the array to check if it is valid.
+		 * If the rate = 9, then we return true. Otherwise, we return false.
+		 */
+		std::unordered_map<int, int> rates;
+		int rate = 0;
+		for (int c : cells) {
+			if (c == 0) {
+				rates[c]++;
+			} else {
+				rates[c] = 1;
+			}
+		}
+		// Sum up the rates
+		for (auto& [key, value] : rates) {
+			rate += value;
+		}
+
+		if (rate != 9) {
+			return false;
+		}
+		return true;
+	}
+
+	bool in_array(int num, std::array<int, 9> cells) {
 		/*
 		 * Checks if num is found in squares. Returns true if so, false if not.
 		 */
 		bool is_found = false;
-		if (std::find(squares.begin(), squares.end(), num) != squares.end()) {
+		if (std::find(cells.begin(), cells.end(), num) != cells.end()) {
 			is_found = true;
 		}
 		return is_found;
