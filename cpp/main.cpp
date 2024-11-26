@@ -7,6 +7,13 @@ int main() {
 	std::mt19937 gen(rd());
 
 	Board board = Board(gen);
+	board.print(board.grid);
+
+	if (board.is_full(board.grid)) {
+		std::cout << "FULL\n";
+	} else {
+		std::cout << "NOT\n";
+	}
 
 	std::cout << "\nProgram completed." << std::endl;
     return 0;
