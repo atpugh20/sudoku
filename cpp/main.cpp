@@ -7,6 +7,7 @@ int main() {
 	std::mt19937 gen(rd());
 
 	Board board = Board(gen);
+	board.fill(board.grid, false);
 	board.print(board.grid);
 
 	if (board.is_full(board.grid)) {

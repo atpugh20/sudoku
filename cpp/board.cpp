@@ -10,8 +10,8 @@ class Board {
 	 * The the board contains all data and methods relating
 	 * to the numbers grid.
 	 */
-	int size;
-	int total_squares;
+	int size = 9;
+	int total_squares = size * size;
 	std::mt19937 gen;
 
 public:
@@ -35,10 +35,22 @@ public:
 		std::cout << '\n';
 	}
 	
-	int fill(std::array<std::array<int, 9>, 9>& g, bool check_repeats) {
+	int fill(std::array<std::array<int, 9>, 9>& g, bool check_repeats=false) {
 		int solutions = 0;
+		for (int r = 0; r < size; ++r) {
+			std::shuffle(nums.begin(), nums.end(), gen);
+			for (int c = 0; c < size; ++c) {
+				// Make sure the cell is empty
+				for (int n : nums) {	
+					if (g[r][c] != 0) break;
+					g[r][c] = n;
+					if (!is_valid_move(r, c, g)) {
+						g[r][c] = 0;
+					}
 
-
+				}
+			}			
+		}	
 		return solutions;
 	}
 
@@ -74,7 +86,7 @@ public:
 		};
 	}
 
-	bool is_valid(const std::array<int, 9>& group) {
+	bool is_valid_group(const std::array<int, 9>& group) {
 		/**
 		 * Checks if there are any repeating numbers in the group passed in.
 		 * Total will not iterate to 9 if there repeating non-zero integers.
@@ -98,6 +110,28 @@ public:
 		return false;
 	}
 
+	bool is_valid_move(int r, int c, const std::array<std::array<int, 9>, 9>& g) {
+		/**
+		 * Uses the is_valid_group function for row, column, and square of the
+		 * selected cell. It returns true if it is a unique non-zero integer
+		 * accross all three of these groups. Otherwise, returns false.
+		 */
+
+		// Check Row
+		if (!is_valid_group(g[r])) {
+			return false;	
+		}
+		// Check Column
+		if (!is_valid_group(get_column(c, g))) {
+			return false;
+		}
+		// Check Square
+		if (!is_valid_group(get_square(r, c, g))) {
+			return false;
+		}
+		return true;
+	}
+
 	bool is_unique() {
 		return true;
 	}
@@ -114,17 +148,7 @@ public:
 			}
 		}
 		return true;
-	}
-
-	bool in_group(int n, const std::array<int, 9>& group) {
-		/**
-		 * If n is found in the passed in array, return true. Otherwise, return false.
-		 */
-		if (std::find(group.begin(), group.end(), n) != group.end()) {
-			return true;
-		}
-		return false;
-	}
+	}	
 
 	int rand_num() {
 		/**
