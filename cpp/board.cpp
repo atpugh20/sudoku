@@ -35,23 +35,28 @@ public:
 		std::cout << '\n';
 	}
 	
-	int fill(std::array<std::array<int, 9>, 9>& g, bool check_repeats=false) {
-		int solutions = 0;
-		for (int r = 0; r < size; ++r) {
+	bool fill(std::array<std::array<int, 9>, 9>& g) {
+		int r = 0, c = 0;	
+		for (; r < size; ++r) {
 			std::shuffle(nums.begin(), nums.end(), gen);
-			for (int c = 0; c < size; ++c) {
+			for (; c < size; ++c) {
 				// Make sure the cell is empty
 				for (int n : nums) {	
 					if (g[r][c] != 0) break;
 					g[r][c] = n;
-					if (!is_valid_move(r, c, g)) {
-						g[r][c] = 0;
+					if (is_valid_move(r, c, g)) {
+						if (is_full(g)) {
+							return true;
+						} else {
+							if (fill(g)) {
+								return true;
+							}
+						}
 					}
-
 				}
 			}			
 		}	
-		return solutions;
+		return false;
 	}
 
 	void make_puzzle() {}
@@ -132,7 +137,19 @@ public:
 		return true;
 	}
 
-	bool is_unique() {
+	bool is_same_grid(const std::array<std::array<int, 9>, 9>& g1,
+				      const std::array<std::array<int, 9>, 9>& g2) {
+		/**
+		 * Checks if the two passed in grids are the same. This is used to
+		 * check for a unique solution.
+		 */
+		for (int r = 0; r < size; ++r) {
+			for (int c = 0; c < size; ++c) {
+				if (g1[r][c] != g2[r][c]) {
+					return false;
+				}
+			}
+		}
 		return true;
 	}
 
