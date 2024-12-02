@@ -5,9 +5,14 @@ int main() {
 	// Set up random
 	std::random_device rd;
 	std::mt19937 gen(rd());
+	
+	// Easy    = 40
+	// Medium  = 35
+	// Hard    = 30
+	// Expert  = 25
 
 	Board board = Board(gen);
-	board.make_puzzle(35);
+	board.make_puzzle(30);
 
 	board.print(board.grid);
 	board.print(board.solution);
