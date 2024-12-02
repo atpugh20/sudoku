@@ -65,10 +65,80 @@ public:
 		return false;
 	}
 
-	void make_puzzle(int clues) {
-		// Fill grid & solution
-		fill(solution);	
-		grid = solution;		
+	bool solve(std::array<std::array<int, 9>, 9>& g, int& counter) {
+		/**
+		 * Solves the input grid while keeping track of the number of
+		 * solutions.
+		 */
+		for (int i = 0; i < total_squares; ++i) {
+			int r = i / 9;
+			int c = i % 9;
+			// Make sure the cell is empty
+			if (g[r][c] == 0) {
+				for (int n : nums) {	
+					g[r][c] = n;
+					if (is_valid_move(r, c, g)) {
+						if (is_full(g)) {
+							counter++;
+							break;
+						} else {
+							if (solve(g, counter)) {
+								return true;		
+							}
+						}
+					}
+				}
+				g[r][c] = 0;
+				return false;
+			}	
+		}	
+		return false;
+	}
+
+	void make_puzzle(int goal_clues) {
+		/**
+		 * Create the puzzle by removing numbers from the solution one by one
+		 * and ensuring that there is a unique solution each time.
+		 */
+		int r, c, original;
+		int current_clues;
+		std::array<std::array<int, 9>, 9> temp;
+		
+		// Create the solution
+		fill(solution);
+		grid = solution;
+		
+		while (current_clues != goal_clues) {
+			// Get non-zero cell	
+			r = rand_num();
+			c = rand_num();
+			while (grid[r][c] == 0) {
+				r = rand_num();
+				c = rand_num();
+			}
+			
+			// Save original value of cell and remove it from grid
+			original = grid[r][c];
+			grid[r][c] = 0;
+			temp = grid;
+			
+			// Solve from current point
+			int counter = 0;
+			solve(temp, counter);
+			
+			// If there are more solutions, revert the cell back to original value
+			if (counter != 1) {
+				grid[r][c] = original;
+			}
+
+			// Check number of clues
+			current_clues = 0;
+			for (std::array<int, 9> r : grid) {
+				for (int c : r) {
+					if (c != 0) current_clues++;
+				}
+			}
+		}
 	}
 
 // private:

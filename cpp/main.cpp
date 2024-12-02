@@ -7,16 +7,20 @@ int main() {
 	std::mt19937 gen(rd());
 
 	Board board = Board(gen);
-	board.make_puzzle(40);
+	board.make_puzzle(35);
 
 	board.print(board.grid);
 	board.print(board.solution);
 
-	if (board.is_full(board.grid)) {
-		std::cout << "FULL\n";
-	} else {
-		std::cout << "NOT\n";
+	int clues = 0;
+
+	for (std::array<int, 9> r : board.grid) {
+		for (int c : r) {
+			if (c != 0) clues++;
+		}
 	}
+	std::cout << clues << '\n';
+
 
 	std::cout << "\nProgram completed." << std::endl;
     return 0;
