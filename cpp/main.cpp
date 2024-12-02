@@ -7,8 +7,10 @@ int main() {
 	std::mt19937 gen(rd());
 
 	Board board = Board(gen);
-	board.fill(board.grid);
+	board.make_puzzle(40);
+
 	board.print(board.grid);
+	board.print(board.solution);
 
 	if (board.is_full(board.grid)) {
 		std::cout << "FULL\n";

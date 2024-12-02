@@ -36,13 +36,17 @@ public:
 	}
 	
 	bool fill(std::array<std::array<int, 9>, 9>& g) {
-		int r = 0, c = 0;	
-		for (; r < size; ++r) {
-			std::shuffle(nums.begin(), nums.end(), gen);
-			for (; c < size; ++c) {
-				// Make sure the cell is empty
+		/**
+		 * Fills the passed in grid with random numbers from the
+		 * nums array.
+		 */
+		std::shuffle(nums.begin(), nums.end(), gen);
+		for (int i = 0; i < total_squares; ++i) {
+			int r = i / 9;
+			int c = i % 9;
+			// Make sure the cell is empty
+			if (g[r][c] == 0) {
 				for (int n : nums) {	
-					if (g[r][c] != 0) break;
 					g[r][c] = n;
 					if (is_valid_move(r, c, g)) {
 						if (is_full(g)) {
@@ -54,17 +58,21 @@ public:
 						}
 					}
 				}
-			}			
+				g[r][c] = 0;
+				return false;
+			}	
 		}	
 		return false;
 	}
 
-	void make_puzzle() {}
-
-	void empty_cells(int num) {}  // For creating the puzzle
+	void make_puzzle(int clues) {
+		// Fill grid & solution
+		fill(solution);	
+		grid = solution;		
+	}
 
 // private:
-
+	
 	std::array<int, 9> get_column(int col, 
 							   const std::array<std::array<int, 9>, 9>& g) {
 		/**
