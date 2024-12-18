@@ -1,21 +1,22 @@
-#include "./board.cpp"
+#include "board.h"
 
 int main() {
 	
 	// Set up random
 	std::random_device rd;
 	std::mt19937 gen(rd());
-	
+
+	const unsigned short clue_count= 40;	
 	// Easy    = 40
 	// Medium  = 35
 	// Hard    = 30
 	// Expert  = 25
 
 	Board board = Board(gen);
-	board.make_puzzle(30);
+	board.MakePuzzle(clue_count);
 
-	board.print(board.grid);
-	board.print(board.solution);
+	board.Print(board.grid);
+	board.Print(board.solution);
 
 	int clues = 0;
 
