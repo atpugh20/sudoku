@@ -3,18 +3,25 @@
 #include <cassert>
 #include <iostream>
 
-GLFWwindow* Renderer::InitWindow() {
-    GLFWwindow *window;
-    assert(glfwInit());
-    window = glfwCreateWindow(640, 480, "Sudoku", NULL, NULL);
+void GLClearError() {
+    // Clears the OpenGL errors
+    while (glGetError() != GL_NO_ERROR);
+}
 
-    if (!window) {
-		glfwTerminate();
-        std::cout << "Unable to initialize window." << std::endl;
-        assert(false);
-	}
+bool GLLogCall(const char *function, const char *file, int line) {
+    // Returns false if there are any OpenGL errors
+    while (GLenum error = glGetError()) {
+        std::cout << "[OpenGL Error] (" << error << "): " << function <<
+            ' ' << file << ": Line " << line << std::endl;
+        return false;
+    }
+    return true;
+}
 
-    glfwMakeContextCurrent(window);
+void Renderer::Clear() const {
+    GLCall(glClear(GL_COLOR_BUFFER_BIT));
+}
 
-    return window;
+void Renderer::Draw() const {
+
 }
