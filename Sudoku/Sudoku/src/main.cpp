@@ -1,12 +1,14 @@
+//#include "GLFW/glfw3.h"
+
 #include "board.h"
 
 int main() {
-	
+
 	// Set up random
 	std::random_device rd;
 	std::mt19937 gen(rd());
 
-	const unsigned short clue_count= 40;	
+	const unsigned short clue_count = 40;
 	// Easy    = 40
 	// Medium  = 35
 	// Hard    = 30
@@ -29,5 +31,5 @@ int main() {
 	std::cout << clues << '\n';
 
 	std::cout << "\nProgram completed." << std::endl;
-    return 0;
+	return 0;
 }

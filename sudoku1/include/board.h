@@ -48,5 +48,4 @@ public:
 		std::uniform_int_distribution<> dis(0, 8);
 		return dis(gen);
 	}
-
 };
