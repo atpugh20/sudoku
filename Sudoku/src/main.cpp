@@ -1,24 +1,14 @@
 #include "GLFW/glfw3.h"
 
 #include "board.h"
+#include "renderer.h"
 
 int main() {
 	
 	// Set up window
-
-	GLFWwindow *window;
+	Renderer renderer;
+	GLFWwindow* window = renderer.InitWindow();
 	
-	if (!glfwInit()) return -1;
-
-	window = glfwCreateWindow(640, 480, "Sudoku", NULL, NULL);
-
-	if (!window) {
-		glfwTerminate();
-		return -1;
-	}
-
-	glfwMakeContextCurrent(window);
-
 	// Set up random
 	std::random_device rd;
 	std::mt19937 gen(rd());
