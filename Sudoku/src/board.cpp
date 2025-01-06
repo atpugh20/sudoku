@@ -79,7 +79,7 @@ void Board::MakePuzzle(int goal_clues) {
 	 * and ensuring that there is a unique solution each time.
 	 */
 	int r, c, original;
-	int current_clues;
+	int current_clues = 0;
 	std::array<std::array<int, 9>, 9> temp;
 
 	// Create the solution

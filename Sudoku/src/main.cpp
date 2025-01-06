@@ -1,8 +1,23 @@
-//#include "GLFW/glfw3.h"
+#include "GLFW/glfw3.h"
 
 #include "board.h"
 
 int main() {
+	
+	// Set up window
+
+	GLFWwindow *window;
+	
+	if (!glfwInit()) return -1;
+
+	window = glfwCreateWindow(640, 480, "Sudoku", NULL, NULL);
+
+	if (!window) {
+		glfwTerminate();
+		return -1;
+	}
+
+	glfwMakeContextCurrent(window);
 
 	// Set up random
 	std::random_device rd;
@@ -29,6 +44,16 @@ int main() {
 	}
 
 	std::cout << clues << '\n';
+
+	while (!glfwWindowShouldClose(window)) {
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		glfwSwapBuffers(window);
+
+		glfwPollEvents();
+	}
+
+	glfwTerminate();
 
 	std::cout << "\nProgram completed." << std::endl;
 	return 0;
