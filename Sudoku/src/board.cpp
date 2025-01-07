@@ -1,4 +1,4 @@
-#include "board.h"
+#include "Board.h"
 
 void Board::Print(const std::array<std::array<int, 9>, 9> &g) {
 	/**

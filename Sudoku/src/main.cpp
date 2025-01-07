@@ -1,5 +1,5 @@
-#include "board.h"
-#include "renderer.h"
+#include "Board.h"
+#include "Renderer.h"
 
 int main(void) {
 	
@@ -25,36 +25,72 @@ int main(void) {
 		std::cout << "GLEW_OKAY != err" << std::endl;
 
 	std::cout << glGetString(GL_VERSION) << std::endl;
+    {
+        Renderer renderer;
 
-	Renderer renderer;
+        // Vertices
+        float positions[] = {
+            -0.5f, -0.5f, // 0
+             0.0f,  0.0f, // 1
+             0.5f, -0.5f, // 2
+             0.5f,  0.5f, // 3
+        };
+        unsigned int positionCount = sizeof(positions) / sizeof(positions[0]);
+        
+        unsigned int indices[] = {
+            0, 1,
+            1, 2,
+            0, 3
+        };
+        unsigned int indexCount = sizeof(indices) / sizeof(indices[0]);
 
-	// Vertices
-	float positions[6] = {
-		-0.5f, -0.5f,
-		 0.0f,  0.5f,
-		 0.5f, -0.5f
-	};
 
-	unsigned int buffer;
-	GLCall(glGenBuffers(1, &buffer));
-	GLCall(glBindBuffer(GL_ARRAY_BUFFER, buffer));
-	GLCall(glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(float), positions, GL_STATIC_DRAW));
+        /*unsigned int buffer;
+        GLCall(glGenBuffers(1, &buffer));
+        GLCall(glBindBuffer(GL_ARRAY_BUFFER, buffer));
+        GLCall(glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(float), positions, GL_STATIC_DRAW));
 
-	GLCall(glEnableVertexAttribArray(0));
-	GLCall(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0));
+        GLCall(glEnableVertexAttribArray(0));
+        GLCall(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0));*/
 
-	// Index
 
-	// Draw Loop
-	while (!glfwWindowShouldClose(window)) {
-		renderer.Clear();
+        // Index Array
+        
 
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+        IndexBuffer ib(indices, indexCount);
+        Shader shader("res/shaders/line.shader");
 
-		glfwSwapBuffers(window);
-		glfwPollEvents();
-	}
+        shader.Bind();
 
+        ib.Unbind();
+        shader.Unbind();
+
+        float inc = 0.01f;
+
+        // Draw Loop
+        while (!glfwWindowShouldClose(window)) {
+            renderer.Clear();
+
+            int c = 1;
+            
+            if (positions[c] < -0.5f || positions[c] > 0.5f) 
+                inc *= -1;
+            
+            positions[c] += inc;
+
+            VertexArray va;
+            VertexBuffer vb(positions, positionCount * sizeof(float));
+            VertexBufferLayout layout;
+            layout.Push<float>(2);
+            va.AddBuffer(vb, layout);
+            
+            shader.Bind();
+            renderer.Draw(va, ib, shader);
+
+            glfwSwapBuffers(window);
+            glfwPollEvents();
+        }
+    }
 	glfwTerminate();
 
 	std::cout << "\nProgram completed." << std::endl;

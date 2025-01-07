@@ -1,6 +1,5 @@
-#include "renderer.h"
+#include "Renderer.h"
 
-#include <cassert>
 #include <iostream>
 
 void GLClearError() {
@@ -22,6 +21,9 @@ void Renderer::Clear() const {
     GLCall(glClear(GL_COLOR_BUFFER_BIT));
 }
 
-void Renderer::Draw() const {
-
+void Renderer::Draw(const VertexArray &va, const IndexBuffer &ib, const Shader &shader) const {
+    shader.Bind();
+    va.Bind();
+    ib.Bind(); 
+    GLCall(glDrawElements(GL_LINES, ib.GetCount(), GL_UNSIGNED_INT, nullptr));
 }
